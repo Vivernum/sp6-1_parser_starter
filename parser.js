@@ -11,6 +11,7 @@ function getAllTheMeta() {
 
   meta.language = document.querySelector('html').lang;
   [meta.title, musor] = document.querySelector('head title').textContent.split("—");
+  meta.title = meta.title.trim();
 
   // ПОЛУЧАЕМ ОСТАЛЬНЫЕ ДАННЫЕ
 
@@ -28,16 +29,14 @@ function getAllTheMeta() {
 
   meta.keywords = meta.keywords.split(",");
 
-  console.log(meta);
+  return meta;
 }
-
-// getAllTheMeta();
 
 function getCurrency(obj, item) {
     if (item === '₽') obj.currency = 'RUB';
     else if (item === '$') obj.currency = 'USD';
     else if (item === '€') obj.currency = 'EUR';
-  }
+}
 
 function getProductData() {
   const product = {};
@@ -68,8 +67,8 @@ function getProductData() {
   // НУЖНО ПРОХОДИТЬ ОСТАТОК КУРСА
   
   [, product.price, product.oldPrice] = document.querySelector('.price').textContent.split('\n');
-  product.price = product.price.trim().split('₽')[1];
-  product.oldPrice = product.oldPrice.trim().split('₽')[1];
+  product.price = +product.price.trim().split('₽')[1];
+  product.oldPrice = +product.oldPrice.trim().split('₽')[1];
   
   // ТУТ ПОЛУЧАЕМ ВАЛЮТУ
   const currency = document.querySelector('.price').children[0].textContent.split('')[0];
@@ -115,10 +114,8 @@ function getProductData() {
     product.images.push(obj);
   })
 
-  console.log(product);
+  return product;
 }
-
-// getProductData();
 
 function getSuggestedItems() {
   const suggested = [];
@@ -138,10 +135,8 @@ function getSuggestedItems() {
     suggested.push(obj);
   })
 
-  console.log(suggested);
+  return suggested;
 }
-
-// getSuggestedItems();
 
 // ТУТ БУДЕМ ПОЛУЧАТЬ ОБЗОРЫ
 
@@ -170,19 +165,17 @@ function getReviews() {
     reviews.push(obj);
   })
 
-  console.log(reviews);
+  return reviews;
 }
-
-// getReviews();
 
 // @todo: напишите здесь код парсера
 
 function parsePage() {
   return {
-    meta: {},
-    product: {},
-    suggested: [],
-    reviews: []
+    meta: getAllTheMeta(),
+    product: getProductData(),
+    suggested: getSuggestedItems(),
+    reviews: getReviews()
   };
 }
 
