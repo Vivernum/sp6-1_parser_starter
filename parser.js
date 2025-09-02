@@ -28,12 +28,16 @@ function getAllTheMeta() {
 
   meta.keywords = meta.keywords.split(",");
 
-  // console.log(headElements);
-  // console.log(meta);
+  console.log(meta);
 }
 
 // getAllTheMeta();
 
+function getCurrency(obj, item) {
+    if (item === '₽') obj.currency = 'RUB';
+    else if (item === '$') obj.currency = 'USD';
+    else if (item === '€') obj.currency = 'EUR';
+  }
 
 function getProductData() {
   const product = {};
@@ -68,10 +72,8 @@ function getProductData() {
   product.oldPrice = product.oldPrice.trim().split('₽')[1];
   
   // ТУТ ПОЛУЧАЕМ ВАЛЮТУ
-  const currency = document.querySelector('.price').children[0].textContent.split('');
-  if (currency[0] === '₽') product.currency = 'RUB';
-  else if (currency[0] === '$') product.currency = 'USD';
-  else if (currency[0] === '€') product.currency = 'EUR';
+  const currency = document.querySelector('.price').children[0].textContent.split('')[0];
+  getCurrency(product, currency);
 
   // ТУТ ПОЛУЧАЕМ СКИДКУ
   const discount = () => {
@@ -113,10 +115,65 @@ function getProductData() {
     product.images.push(obj);
   })
 
-  // console.log(product);
+  console.log(product);
 }
 
 // getProductData();
+
+function getSuggestedItems() {
+  const suggested = [];
+
+  const arr = Array.from(document.querySelector('.suggested .items').children);
+  arr.forEach(item => {
+    const obj = {};
+
+    obj.name = item.querySelector('h3').textContent;
+    obj.description = item.querySelector('p').textContent;
+    obj.image = item.querySelector('img').src;
+    [, obj.price] = item.querySelector('b').textContent.split('₽');
+
+    const currency = item.querySelector('b').textContent.split('')[0];
+    getCurrency(obj, currency);
+
+    suggested.push(obj);
+  })
+
+  console.log(suggested);
+}
+
+// getSuggestedItems();
+
+// ТУТ БУДЕМ ПОЛУЧАТЬ ОБЗОРЫ
+
+function getReviews() {
+  const reviews = [];
+
+  const arr = Array.from(document.querySelector('.reviews .items').children);
+  arr.forEach(item => {
+    const obj = {};
+
+    obj.title = item.querySelector('h3').textContent;
+    obj.description = item.querySelector('p').textContent;
+    obj.author = {};
+    obj.author.avatar = item.querySelector('.author img').src;
+    obj.author.name = item.querySelector('.author span').textContent;
+    obj.date = item.querySelector('.author i').textContent;
+
+    const rating = Array.from(item.querySelector('.rating').children);
+    let counter = 0;
+    rating.forEach(item => {
+      if (item.classList.contains('filled')) counter++;
+    })
+
+    obj.rating = counter;
+
+    reviews.push(obj);
+  })
+
+  console.log(reviews);
+}
+
+// getReviews();
 
 // @todo: напишите здесь код парсера
 
