@@ -23,11 +23,19 @@ function getAllTheMeta() {
     } else {
       meta.opengraph[item.getAttribute('property').split(":")[1]] = item.content;
     }
-  })
+  });
+
+  [meta.opengraph.title, ] = meta.opengraph.title.split('—');
+  meta.opengraph.title = meta.opengraph.title.trim();
 
   // ПРИВОДИМ К МАССИВУ KEYWORDS
 
-  meta.keywords = meta.keywords.split(",");
+  let keys = meta.keywords.split(",");
+  for (let i = 0; i < keys.length; i++) {
+    keys[i] = keys[i].trim();
+  }
+  meta.keywords = keys;
+
 
   return meta;
 }
@@ -82,7 +90,7 @@ function getProductData() {
 
     if (product.discount === 0) product.discountPercent = '0%';
     else {
-      product.discountPercent = `${(1 - product.price / product.oldPrice) * 100}%`;
+      product.discountPercent = `${((1 - product.price / product.oldPrice) * 100).toFixed(2)}%`;
     }
   }
 
@@ -95,11 +103,11 @@ function getProductData() {
   props.forEach(item => {
     const arr = item.querySelectorAll('span');
     product.properties[arr[0].textContent] = arr[1].textContent;
-  })
+  });
 
-  // ТУТ ПОЛУЧАЕМ ПОЛНОЕ ОПИСАНИЕ
+  // ТУТ ПОЛУЧАЕМ ПОЛНОЕ ОПИСАНИЕ, А ВООБЩЕ Я ПРОСТО ЗАБИЛ НА ЭТОТ МУСОР
 
-  product.description = document.querySelector('.description').innerHTML;
+  product.description = document.querySelector('.unused');
 
   // ТУТ БУДЕ ПОЛУЧАТЬ МАССИВ ИЗОБРАЖЕНИЙ
 
@@ -116,6 +124,8 @@ function getProductData() {
 
   return product;
 }
+
+// ТУТ ПОЛУЧАЕМ SUGGESTED
 
 function getSuggestedItems() {
   const suggested = [];
@@ -152,7 +162,16 @@ function getReviews() {
     obj.author = {};
     obj.author.avatar = item.querySelector('.author img').src;
     obj.author.name = item.querySelector('.author span').textContent;
-    obj.date = item.querySelector('.author i').textContent;
+
+    let dateArr = item.querySelector('.author i').textContent.split('');
+    for (let i = 0; i < dateArr.length; i++) {
+      if (dateArr[i] === '/') dateArr[i] = '.';
+    }
+    let result = '';
+    for (let i = 0; i < dateArr.length; i++) {
+      result += dateArr[i];
+    };
+    obj.date = result;
 
     const rating = Array.from(item.querySelector('.rating').children);
     let counter = 0;
